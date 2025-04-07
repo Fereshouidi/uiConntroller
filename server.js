@@ -199,6 +199,8 @@ Current Body Structure to Modify:
 
 
 </body>
+
+note: if user ask you to turn on the dark mod , try to edit the body to make it works .
   
 `;  
 const frontEndAgent = new Gemini(websiteAssistantPrompt);
