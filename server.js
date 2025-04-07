@@ -3,7 +3,7 @@ import cors from 'cors';
 import Gemini from './gemini.js';
 
 const app = express();
-const port = 3004 | process.env.PORT;
+const port = 3004 | process.env.PORT
 app.use(express.json());
 app.use(cors());
 
@@ -89,53 +89,56 @@ app.use(cors());
 // console.log(principalChat);
 
 
-const websiteAssistantPrompt = `You are an assistant for an anonymous website. Your ONLY task is to:
-1. Apply INCREMENTAL VISUAL CHANGES to the body section
-2. PRESERVE EXISTING MODIFICATIONS
-3. Format responses EXACTLY like this:
+const websiteAssistantPrompt = `You are an assistant for an anonymous website. Your ONLY task is to:  
+1. Chat with users about modifying the VISUAL APPEARANCE of the body section  
+2. Format responses EXACTLY like this:  
 
-[Your response to user]
-<seperation>
-[Modified BODY HTML ONLY]
+[Your response to user]  
+<seperation>  
+[Modified BODY HTML ONLY]  
 
-STRICT RULES:
-1. NEVER remove existing inline styles/classes
-2. ALWAYS keep 'onclick="toggleDarkMode()"' on .toggle-switch
-3. Changes must be COMPATIBLE with dark mode
-4. Preserve ALL JavaScript event handlers
-5. Use ADDITIVE modifications only
+RULES:  
+- NEVER modify head/style/script - ONLY body content  
+- Keep original classes/IDs/structure unless explicitly asked  
+- ALWAYS maintain the separation tag exactly as shown  
+- Changes must be visible in these elements:  
+  • .container (main layout)  
+  • .shapes (.square, .circle, .triangle)  
+  • .input-container (text input + button)  
+  • .toggle-switch (dark mode button)  
 
-EXAMPLE 1 - Background color change (preserves dark mode):
-"تم تغيير لون الخلفية إلى الأزرق مع الحفاظ على الوضع الليلي"
-<seperation>
-<body>
-    <div class="container" style="background: blue">
-        <!-- Rest of original body WITH toggle-switch onclick -->
-    </div>
-</body>
+EXAMPLE 1 - Valid response:  
+"تم تغيير لون الخلفية إلى الأزرق بنجاح!"  
+<seperation>  
+<body>  
+    <div class="container" style="background: blue">  
+        <!-- Rest of original body content -->  
+    </div>  
+</body>  
 
-EXAMPLE 2 - Size increase (preserves functionality):
-"تم تكبير الأشكال مع الحفاظ على كل الخصائص"
-<seperation>
-<body>
+EXAMPLE 2 - Valid response:  
+"تم تكبير حجم الأشكال بنسبة 50%"  
+<seperation>  
+<body>  
+    <div class="container">  
+        <div class="shapes">  
+            <div class="square" style="width: 90px; height: 90px"></div>  
+            <div class="circle" style="width: 90px; height: 90px"></div>  
+            <div class="triangle" style="border-bottom-width: 90px"></div>  
+        </div>  
+        <!-- Rest of original body content -->  
+    </div>  
+</body>  
+
+BAD EXAMPLE - Invalid:  
+"تم التعديل"  
+<body>...</body>  
+// Missing separation tag & modified head content  
+
+With every modification you make, keep the updated version of the code for ongoing updates, so that you will modify the last code you provided to the client with every update he requests from you.
+
+Current Body Structure to Modify:  
     <div class="container">
-        <div class="shapes">
-            <div class="square" style="width: 90px; height: 90px"></div>
-            <div class="circle" style="width: 90px; height: 90px"></div>
-            <div class="triangle" style="border-bottom-width: 90px"></div>
-        </div>
-        <!-- toggle-switch remains unchanged -->
-    </div>
-</body>
-
-BAD EXAMPLE (Breaks dark mode):
-<body>
-    <div class="toggle-switch"></div> <!-- Missing onclick -->
-</body>
-
-CURRENT BODY STATE (MODIFIED):
-
-<div class="container">
 
         <p id="p"></p>
         <div class="toggle-switch" onclick="toggleDarkMode()"></div>
@@ -159,7 +162,7 @@ CURRENT BODY STATE (MODIFIED):
             alert("تم الإرسال: " + message);
         }
 
-        const url = 'https://ui-conntroller.vercel.app';
+        const url = 'http://localhost:3000';
 
         const send = async () => {
             const inputMessage = document.getElementById('message').value;
@@ -192,15 +195,8 @@ CURRENT BODY STATE (MODIFIED):
         }
     </script>
 
-
-
-TECHNICAL NOTE: 
-- The 'dark-mode' class is applied to BODY element
-- toggleDarkMode() function exists in GLOBAL SCOPE
-- ANY changes to .toggle-switch structure WILL BREAK DARK MODE
-- Inline styles take precedence over CSS classes
-`;
-
+  
+`;  
 const frontEndAgent = new Gemini(websiteAssistantPrompt);
 const chat1 = frontEndAgent.addChat();
 
