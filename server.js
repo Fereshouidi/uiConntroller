@@ -139,7 +139,8 @@ With every modification you make, keep the updated version of the code for ongoi
 
 Current Body Structure to Modify:  
 
-        <div class="container">
+<body id="body">
+    <div class="container">
 
         <p id="p"></p>
         <div class="toggle-switch" onclick="toggleDarkMode()"></div>
@@ -197,6 +198,7 @@ Current Body Structure to Modify:
     </script>
 
 
+</body>
   
 `;  
 const frontEndAgent = new Gemini(websiteAssistantPrompt);
