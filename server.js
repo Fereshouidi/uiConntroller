@@ -134,10 +134,66 @@ BAD EXAMPLE (Breaks dark mode):
 </body>
 
 CURRENT BODY STATE (MODIFIED):
-<div class="container">
-    <div class="toggle-switch" onclick="toggleDarkMode()"></div>
-    <!-- Any existing modified elements -->
-</div>
+<body id="body">
+    <div class="container">
+
+        <p id="p"></p>
+        <div class="toggle-switch" onclick="toggleDarkMode()"></div>
+        <div class="shapes">
+            <div class="square"></div>
+            <div class="circle"></div>
+            <div class="triangle"></div>
+        </div>
+        <div class="input-container">
+            <input type="text" id="message" placeholder="أدخل رسالة...">
+            <button onclick="send()">إرسال</button>
+        </div>
+    </div>
+    
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
+        function sendMessage() {
+            let message = document.getElementById("message").value;
+            alert("تم الإرسال: " + message);
+        }
+
+        const url = 'https://ui-conntroller.vercel.app';
+
+        const send = async () => {
+            const inputMessage = document.getElementById('message').value;
+            try {
+                const response = await fetch(url + '/edit/website', {
+                    method: 'POST', 
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userMSG: inputMessage 
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('error');
+                }
+
+                const data = await response.json();
+                console.log(data.messageForUser);
+                const dody = document.getElementById('body');
+                body.innerHTML = data.newBody; 
+                const p = document.getElementById('p');
+                p.innerText = data.messageForUser; 
+                
+            } catch (err) {
+                console.error('Error:', err);
+                throw err;
+            }
+        }
+    </script>
+
+
+</body>
 
 TECHNICAL NOTE: 
 - The 'dark-mode' class is applied to BODY element
