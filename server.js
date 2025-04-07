@@ -162,7 +162,7 @@ Current Body Structure to Modify:
             alert("تم الإرسال: " + message);
         }
 
-        const url = 'http://localhost:3000';
+        const url = 'https://ui-conntroller.vercel.app/';
 
         const send = async () => {
             const inputMessage = document.getElementById('message').value;
