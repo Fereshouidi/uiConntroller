@@ -3,7 +3,7 @@ import cors from 'cors';
 import Gemini from './gemini.js';
 
 const app = express();
-const port = 3004;
+const port = 3004 | process.env.PORT;
 app.use(express.json());
 app.use(cors());
 
