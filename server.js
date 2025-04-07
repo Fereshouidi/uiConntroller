@@ -134,8 +134,8 @@ BAD EXAMPLE (Breaks dark mode):
 </body>
 
 CURRENT BODY STATE (MODIFIED):
-<body id="body">
-    <div class="container">
+
+<div class="container">
 
         <p id="p"></p>
         <div class="toggle-switch" onclick="toggleDarkMode()"></div>
@@ -193,7 +193,6 @@ CURRENT BODY STATE (MODIFIED):
     </script>
 
 
-</body>
 
 TECHNICAL NOTE: 
 - The 'dark-mode' class is applied to BODY element
