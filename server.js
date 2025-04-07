@@ -89,120 +89,63 @@ app.use(cors());
 // console.log(principalChat);
 
 
-const websiteAssistantPrompt = `You are an assistant for an anonymous website. Your ONLY task is to:  
-1. Chat with users about modifying the VISUAL APPEARANCE of the body section  
-2. Format responses EXACTLY like this:  
+const websiteAssistantPrompt = `You are an assistant for an anonymous website. Your ONLY task is to:
+1. Apply INCREMENTAL VISUAL CHANGES to the body section
+2. PRESERVE EXISTING MODIFICATIONS
+3. Format responses EXACTLY like this:
 
-[Your response to user]  
-<seperation>  
-[Modified BODY HTML ONLY]  
+[Your response to user]
+<seperation>
+[Modified BODY HTML ONLY]
 
-RULES:  
-- NEVER modify head/style/script - ONLY body content  
-- Keep original classes/IDs/structure unless explicitly asked  
-- ALWAYS maintain the separation tag exactly as shown  
-- Changes must be visible in these elements:  
-  • .container (main layout)  
-  • .shapes (.square, .circle, .triangle)  
-  • .input-container (text input + button)  
-  • .toggle-switch (dark mode button)  
+STRICT RULES:
+1. NEVER remove existing inline styles/classes
+2. ALWAYS keep 'onclick="toggleDarkMode()"' on .toggle-switch
+3. Changes must be COMPATIBLE with dark mode
+4. Preserve ALL JavaScript event handlers
+5. Use ADDITIVE modifications only
 
-EXAMPLE 1 - Valid response:  
-"تم تغيير لون الخلفية إلى الأزرق بنجاح!"  
-<seperation>  
-<body>  
-    <div class="container" style="background: blue">  
-        <!-- Rest of original body content -->  
-    </div>  
-</body>  
-
-EXAMPLE 2 - Valid response:  
-"تم تكبير حجم الأشكال بنسبة 50%"  
-<seperation>  
-<body>  
-    <div class="container">  
-        <div class="shapes">  
-            <div class="square" style="width: 90px; height: 90px"></div>  
-            <div class="circle" style="width: 90px; height: 90px"></div>  
-            <div class="triangle" style="border-bottom-width: 90px"></div>  
-        </div>  
-        <!-- Rest of original body content -->  
-    </div>  
-</body>  
-
-BAD EXAMPLE - Invalid:  
-"تم التعديل"  
-<body>...</body>  
-// Missing separation tag & modified head content  
-
-With every modification you make, keep the updated version of the code for ongoing updates, so that you will modify the last code you provided to the client with every update he requests from you.
-
-Current Body Structure to Modify:  
-
-<body id="body">
-    <div class="container">
-
-        <p id="p"></p>
-        <div class="toggle-switch" onclick="toggleDarkMode()"></div>
-        <div class="shapes">
-            <div class="square"></div>
-            <div class="circle"></div>
-            <div class="triangle"></div>
-        </div>
-        <div class="input-container">
-            <input type="text" id="message" placeholder="أدخل رسالة...">
-            <button onclick="send()">إرسال</button>
-        </div>
+EXAMPLE 1 - Background color change (preserves dark mode):
+"تم تغيير لون الخلفية إلى الأزرق مع الحفاظ على الوضع الليلي"
+<seperation>
+<body>
+    <div class="container" style="background: blue">
+        <!-- Rest of original body WITH toggle-switch onclick -->
     </div>
-    
-    <script>
-        function toggleDarkMode() {
-            document.body.classList.toggle("dark-mode");
-        }
-        function sendMessage() {
-            let message = document.getElementById("message").value;
-            alert("تم الإرسال: " + message);
-        }
-
-        const url = 'https://ui-conntroller.vercel.app';
-
-        const send = async () => {
-            const inputMessage = document.getElementById('message').value;
-            try {
-                const response = await fetch(url + '/edit/website', {
-                    method: 'POST', 
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        userMSG: inputMessage 
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error('error');
-                }
-
-                const data = await response.json();
-                console.log(data.messageForUser);
-                const dody = document.getElementById('body');
-                body.innerHTML = data.newBody; 
-                const p = document.getElementById('p');
-                p.innerText = data.messageForUser; 
-                
-            } catch (err) {
-                console.error('Error:', err);
-                throw err;
-            }
-        }
-    </script>
-
-
 </body>
 
-note: if user ask you to turn on the dark mod , try to edit the body to make it works .
-  
-`;  
+EXAMPLE 2 - Size increase (preserves functionality):
+"تم تكبير الأشكال مع الحفاظ على كل الخصائص"
+<seperation>
+<body>
+    <div class="container">
+        <div class="shapes">
+            <div class="square" style="width: 90px; height: 90px"></div>
+            <div class="circle" style="width: 90px; height: 90px"></div>
+            <div class="triangle" style="border-bottom-width: 90px"></div>
+        </div>
+        <!-- toggle-switch remains unchanged -->
+    </div>
+</body>
+
+BAD EXAMPLE (Breaks dark mode):
+<body>
+    <div class="toggle-switch"></div> <!-- Missing onclick -->
+</body>
+
+CURRENT BODY STATE (MODIFIED):
+<div class="container">
+    <div class="toggle-switch" onclick="toggleDarkMode()"></div>
+    <!-- Any existing modified elements -->
+</div>
+
+TECHNICAL NOTE: 
+- The 'dark-mode' class is applied to BODY element
+- toggleDarkMode() function exists in GLOBAL SCOPE
+- ANY changes to .toggle-switch structure WILL BREAK DARK MODE
+- Inline styles take precedence over CSS classes
+`;
+
 const frontEndAgent = new Gemini(websiteAssistantPrompt);
 const chat1 = frontEndAgent.addChat();
 
